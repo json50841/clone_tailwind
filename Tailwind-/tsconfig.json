@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    // 你原来加的 ↓
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": false,
+
+    // ✅ 新增，告诉 TS 可以识别 node 内置模块
+    "types": ["node"]
+  },
+  "include": ["src", "vite.config.ts"]
+}
