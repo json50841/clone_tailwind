@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface Post {
   id: number;
@@ -11,13 +10,13 @@ export default function Dashboard() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      navigate("/", { replace: true });
+      setError("未登录，请先登录");
+      setLoading(false);
       return;
     }
 
@@ -34,26 +33,35 @@ export default function Dashboard() {
           const data = await res.json();
           setPosts(data);
         } else {
-          localStorage.removeItem("token");
-          navigate("/", { replace: true });
+          const errMsg = await res.text();
+          setError(`获取文章失败: ${res.status} ${errMsg}`);
         }
-      } catch {
-        setError("网络错误");
+      } catch (err: any) {
+        setError("网络错误: " + err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPosts();
-  }, [navigate]);
-
-  if (loading) return <p>加载中...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/", { replace: true });
+    setError("已退出，请重新登录");
+    setPosts([]);
   };
+
+  if (loading) return <p>加载中...</p>;
+  if (error)
+    return (
+      <div className="p-6">
+        <p className="text-red-500 mb-4">{error}</p>
+        <button className="btn btn-primary" onClick={handleLogout}>
+          退出
+        </button>
+      </div>
+    );
 
   return (
     <div className="p-6">
