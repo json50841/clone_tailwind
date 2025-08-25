@@ -1,15 +1,17 @@
-# backend/app/main.py
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
+
+# ✅ 引入 dataanaly
+from data_analy.dataanaly import run_analysis
 
 app = FastAPI()
 
 # 允许所有跨域请求
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 或者改成前端 URL
+    allow_origins=["*"],  # 可以改成前端 URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,7 +33,9 @@ class LoginRequest(BaseModel):
 
 @app.get("/")
 def root():
-    return {"message": "Hello, Codespaces!"}
+    # 调用 dataanaly 的函数
+    analysis_result = run_analysis()
+    return {"message": f"Hello, Codespaces! {analysis_result}"}
 
 # POST 接口登录，返回 token
 @app.post("/login")
