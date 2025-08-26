@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 # ✅ 引入 dataanaly
-from data_analy.dataanaly import run_analysis
+from data_analy.dataanaly import run_analysis_wrapper
 
 app = FastAPI()
 
@@ -34,7 +34,7 @@ class LoginRequest(BaseModel):
 @app.get("/")
 def root():
     # 调用 dataanaly 的函数
-    analysis_result = run_analysis()
+    analysis_result = run_analysis_wrapper()
     return {"message": f"Hello, Codespaces! {analysis_result}"}
 
 # POST 接口登录，返回 token

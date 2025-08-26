@@ -1,0 +1,5 @@
+1. apple - 苹果
+2. banana - 香蕉
+3. orange - 橙子
+4. grape - 葡萄
+5. strawberry - 草莓
