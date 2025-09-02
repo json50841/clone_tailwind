@@ -6,7 +6,7 @@ import subprocess
 # 1. kaggle.json 内容
 kaggle_token = {
     "username": "uoihkhkujkjnknjk",
-    "key": "4b7ba015f98f36e011dfab7c62ad7a88"
+    "key": "4b7ba015f98f36e011dfab7c62ad7a88",
 }
 
 # 2. 创建 .kaggle 目录

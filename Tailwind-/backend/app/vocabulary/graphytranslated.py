@@ -15,6 +15,7 @@ output_file = output_dir / "translated_words.txt"
 # 如果 tesseract 不在 PATH，可取消下面注释并修改路径
 # pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
+
 # ---------- 图片切片函数 ----------
 def slice_image(img: Image.Image, max_height: int = 2000):
     slices = []
@@ -25,6 +26,7 @@ def slice_image(img: Image.Image, max_height: int = 2000):
         slices.append(slice_img)
     return slices
 
+
 # ---------- OCR 提取文字 ----------
 print("📄 正在提取图片文字...")
 img = Image.open(img_file)
@@ -34,7 +36,7 @@ for slice_img in slice_image(img):
     text += slice_text + " "
 
 # ---------- 提取英文单词并去重 ----------
-words = re.findall(r'\b[a-zA-Z-]+\b', text)
+words = re.findall(r"\b[a-zA-Z-]+\b", text)
 seen = set()
 unique_words = []
 for w in words:
@@ -45,23 +47,19 @@ for w in words:
 if not unique_words:
     raise ValueError("❌ 未能从图片中提取到英文单词，请检查图片文件。")
 
+
 # ---------- 逐行翻译函数 ----------
 def translate_word(word: str) -> str:
     try:
         url = "https://translate.googleapis.com/translate_a/single"
-        params = {
-            "client": "gtx",
-            "sl": "en",
-            "tl": "zh-CN",
-            "dt": "t",
-            "q": word
-        }
+        params = {"client": "gtx", "sl": "en", "tl": "zh-CN", "dt": "t", "q": word}
         response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
         zh = response.json()[0][0][0]
         return zh
     except Exception as e:
         return f"翻译失败: {e}"
+
 
 # ---------- 写入初始 TXT ----------
 with open(output_file, "w", encoding="utf-8") as f:

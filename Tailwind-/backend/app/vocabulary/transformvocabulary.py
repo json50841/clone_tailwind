@@ -28,7 +28,7 @@ for page in reader.pages:
 # ----------------------------
 # 提取英文单词（字母和可选连字符）
 # ----------------------------
-words = re.findall(r'\b[a-zA-Z-]+\b', text)
+words = re.findall(r"\b[a-zA-Z-]+\b", text)
 # 去重并保持顺序
 seen = set()
 unique_words = []
@@ -43,6 +43,7 @@ if not unique_words:
 
 print(f"提取到 {len(unique_words)} 个单词，开始翻译...")
 
+
 # ----------------------------
 # 批量翻译函数
 # ----------------------------
@@ -55,28 +56,23 @@ def batch_translate(words_list, batch_size=50, delay=0.3):
     """
     results = []
     for i in range(0, len(words_list), batch_size):
-        chunk = words_list[i:i+batch_size]
+        chunk = words_list[i : i + batch_size]
         query = " ".join(chunk)
         try:
             url = "https://translate.googleapis.com/translate_a/single"
-            params = {
-                "client": "gtx",
-                "sl": "en",
-                "tl": "zh-CN",
-                "dt": "t",
-                "q": query
-            }
+            params = {"client": "gtx", "sl": "en", "tl": "zh-CN", "dt": "t", "q": query}
             response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
             translations = response.json()[0]
             # Google 返回的是每个单词的翻译
-            chunk_results = [t[0] for t in translations[:len(chunk)]]
+            chunk_results = [t[0] for t in translations[: len(chunk)]]
             results.extend(chunk_results)
         except Exception as e:
             # 如果请求失败，用提示代替
             results.extend([f"翻译失败: {e}"] * len(chunk))
         time.sleep(delay)
     return results
+
 
 # ----------------------------
 # 执行翻译
