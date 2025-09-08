@@ -14,7 +14,7 @@ export default function InfoPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token"); // 或直接写死 token: const token = "admin_token";
+    const token = localStorage.getItem("token");
     if (!token) {
       // 没有 token，重定向到首页
       navigate("/", { replace: true });
@@ -24,18 +24,18 @@ export default function InfoPage() {
     const fetchPosts = async () => {
       try {
         const res = await fetch(
-          "https://improved-zebra-wrj5jrrqgq54cvgwq-8000.app.github.dev/posts",
+          "https://improved-zebra-wrj5jrrqgq54cvgwq-8000.app.github.dev/posts/",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: `Token ${token}` }, // ✅ 改这里
           }
         );
 
+        const data = await res.json();
+
         if (!res.ok) {
-          const data = await res.json();
           throw new Error(data.error || `请求失败: ${res.status}`);
         }
 
-        const data: Post[] = await res.json();
         setPosts(data);
       } catch (err: any) {
         setError("获取文章失败: " + err.message);

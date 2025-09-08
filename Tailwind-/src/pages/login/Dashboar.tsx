@@ -8,74 +8,57 @@ interface Post {
 
 export default function Dashboard() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setError("未登录，请先登录");
-      setLoading(false);
-      return;
-    }
-
     const fetchPosts = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("未登录，请先登录");
+        window.location.href = "/";
+        return;
+      }
+
       try {
         const res = await fetch(
-          "https://improved-zebra-wrj5jrrqgq54cvgwq-8000.app.github.dev/posts",
+          "https://improved-zebra-wrj5jrrqgq54cvgwq-8000.app.github.dev/posts/",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            method: "GET",
+            headers: {
+              Authorization: `Token ${token}`,
+            },
           }
         );
 
-        if (res.ok) {
-          const data = await res.json();
-          setPosts(data);
-        } else {
-          const errMsg = await res.text();
-          setError(`获取文章失败: ${res.status} ${errMsg}`);
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("Server error:", res.status, text);
+          throw new Error("请求失败");
         }
-      } catch (err: any) {
-        setError("网络错误: " + err.message);
-      } finally {
-        setLoading(false);
+
+        const data: Post[] = await res.json();
+        setPosts(data);
+      } catch (err) {
+        console.error("获取文章失败:", err);
+        setError("获取文章失败，请先登录");
+        // Clear token and redirect
+        localStorage.removeItem("token");
+        window.location.href = "/";
       }
     };
 
     fetchPosts();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setError("已退出，请重新登录");
-    setPosts([]);
-  };
-
-  if (loading) return <p>加载中...</p>;
-  if (error)
-    return (
-      <div className="p-6">
-        <p className="text-red-500 mb-4">{error}</p>
-        <button className="btn btn-primary" onClick={handleLogout}>
-          退出
-        </button>
-      </div>
-    );
-
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">后台文章管理</h1>
-        <button className="btn btn-outline" onClick={handleLogout}>
-          退出
-        </button>
-      </div>
+      <h1 className="text-xl font-bold mb-4">文章列表</h1>
+      {error && <p className="text-red-500">{error}</p>}
       <ul className="space-y-4">
         {posts.map((post) => (
-          <li key={post.id} className="p-4 border rounded shadow bg-white">
-            <h2 className="text-lg font-semibold">{post.title}</h2>
-            <p className="text-sm text-gray-600">{post.summary}</p>
+          <li key={post.id} className="p-4 border rounded-lg shadow">
+            <h2 className="font-semibold">{post.title}</h2>
+            <p>{post.summary}</p>
           </li>
         ))}
       </ul>
