@@ -37,7 +37,7 @@ export default function LoginPage() {
         // Redirect to dashboard
         navigate("/dashboard");
       } else {
-        setError(data.error || data.detail || "Login failed");
+        setError(data.error  || "Login failed");
       }
     } catch (err) {
       console.error(err);
